@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بيتزا فريش - المنيو</title>
+<meta name="description" content="منيو بيتزا فريش. اطلب بيتزا وفطير وكريب ومكرونة وسيصلك الطلب عبر واتساب.">
+<meta name="theme-color" content="#0c0c0d">
+<link rel="icon" href="assets/logo.webp" type="image/webp">
+<link rel="apple-touch-icon" href="assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app" class="wrap" dir="rtl" lang="ar">
+  <header class="brand">
+    <div class="gingham" aria-hidden="true"></div>
+    <div class="brand-row">
+      <div class="logo" id="logo"></div>
+      <h1 id="store-name" class="sr"></h1>
+      <p id="tagline" hidden></p>
+    </div>
+    <ul class="facts" id="facts"></ul>
+    <div class="admin-bar" id="admin-bar" hidden>
+      <button class="mini adm-open" id="admin-open" type="button">إدارة المنيو</button>
+      <span class="badge-dirty" id="admin-dirty" hidden>تعديلات غير منشورة</span>
+      <button class="mini" id="admin-logout" type="button">خروج المدير</button>
+    </div>
+  </header>
+
+  <div class="bar" id="bar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="ابحث عن صنف…" aria-label="بحث عن صنف" autocomplete="off" enterkeyhint="search">
+    </div>
+    <nav class="chips" id="chips" aria-label="الأقسام"></nav>
+  </div>
+
+  <main id="menu"></main>
+  <p class="empty" id="none" hidden>لا يوجد صنف بهذا الاسم. جرّب كلمة أخرى.</p>
+  <p class="foot">الأسعار بالجنيه المصري. رسوم التوصيل تُضاف حسب المنطقة عند إتمام الطلب.<br><button class="linkbtn" id="admin-link" type="button">دخول المدير</button></p>
+</div>
+
+<div class="cartbar" id="cartbar" hidden>
+  <button class="cartbtn" id="open-cart" type="button">
+    <span class="l"><span class="badge" id="cb-count">0</span><span>عرض السلة</span></span>
+    <span class="tot"><span id="cb-total">0</span> ج.م</span>
+  </button>
+</div>
+
+<a class="wafab" id="wa-float" href="#" target="_blank" rel="noopener" aria-label="تواصل معنا عبر واتساب">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27l1.7-5.6A10.800 10.800 0 1 1 10.600 25.400Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path transform="translate(9.200 9.200) scale(.600)" fill="#fff" d="M6.620 10.790c1.440 2.830 3.760 5.140 6.590 6.590l2.200-2.200c.270-.270.670-.360 1.020-.240 1.120.370 2.330.570 3.570.570.550 0 1 .450 1 1V20c0 .550-.450 1-1 1-9.390 0-17-7.610-17-17 0-.550.450-1 1-1h3.500c.550 0 1 .450 1 1 0 1.250.200 2.450.570 3.570.110.350.030.740-.250 1.020l-2.200 2.200z"/></svg>
+</a>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-head">
+      <h2 id="sheet-title">سلة الطلب</h2>
+      <button class="x" id="close-cart" type="button" aria-label="إغلاق">×</button>
+    </div>
+
+    <div class="panel" id="cart-items" tabindex="-1"></div>
+
+    <div class="panel">
+      <div class="seg" role="radiogroup" aria-label="طريقة الاستلام">
+        <label><input type="radio" name="mode" value="delivery" checked><span>توصيل للمنزل</span></label>
+        <label><input type="radio" name="mode" value="pickup"><span>استلام من المحل</span></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>بيانات العميل</h3>
+      <div class="field"><label for="f-name">الاسم</label><input id="f-name" type="text" autocomplete="name"></div>
+      <div class="field"><label for="f-phone">رقم التليفون</label><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx"></div>
+      <div id="delivery-fields">
+        <div class="field"><label for="f-address">العنوان بالتفصيل</label><textarea id="f-address" autocomplete="street-address" placeholder="الشارع، رقم المنزل، الدور، علامة مميزة"></textarea></div>
+        <div class="field"><label for="f-area">منطقة التوصيل</label><select id="f-area"></select></div>
+      </div>
+      <div class="field"><label for="f-notes">ملاحظات الأوردر</label><textarea id="f-notes" placeholder="مثال: من غير بصل، رن الجرس مرة واحدة"></textarea></div>
+    </div>
+
+    <div class="panel">
+      <h3>طريقة الدفع</h3>
+      <div class="pay" role="radiogroup" aria-label="طريقة الدفع">
+        <label><input type="radio" name="pay" value="cash" checked><span id="pay-cash-label">نقدي عند التوصيل</span></label>
+        <label><input type="radio" name="pay" value="wallet"><span>محفظة إلكترونية</span></label>
+        <label><input type="radio" name="pay" value="insta"><span>إنستا باي</span></label>
+      </div>
+      <div class="proof" id="proof" hidden>
+        <div class="paynum">
+          <span>حوّل الإجمالي على رقم:</span><b id="paynum"></b>
+          <button class="mini" id="copy-num" type="button">نسخ الرقم</button>
+        </div>
+        <div class="field">
+          <label for="f-proof">صورة التحويل (اختياري)</label>
+          <input id="f-proof" type="file" accept="image/*">
+        </div>
+        <div class="preview" id="preview" hidden>
+          <img id="preview-img" alt="صورة التحويل">
+          <span id="preview-name"></span>
+          <button class="mini" id="remove-proof" type="button">حذف</button>
+        </div>
+        <p class="note">واتساب لا يسمح بإرفاق الصور تلقائياً. بعد فتح المحادثة أرسل صورة التحويل فيها.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>الحساب</h3>
+      <div class="sum">
+        <div><span>إجمالي الأصناف</span><span><span id="s-items">0</span> ج.م</span></div>
+        <div><span id="s-fee-label">مصاريف التوصيل</span><span id="s-fee">—</span></div>
+        <div class="grand"><span>الإجمالي</span><span><span id="s-total">0</span> ج.م</span></div>
+      </div>
+    </div>
+
+    <p class="err" id="f-error" role="alert" hidden></p>
+    <a class="send" id="send" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.500a8.500 8.500 0 0 1-12.600 7.400L3 20.500l1.700-5A8.500 8.500 0 1 1 21 11.500Z"/><path d="M9 9.500c.5 3 2.500 5 5.500 5.500"/></svg>
+      إرسال الطلب عبر واتساب
+    </a>
+    <div class="after" id="after" hidden>
+      <p class="note">اضغط إرسال داخل واتساب لإتمام الطلب. لو لم يفتح واتساب، انسخ نص الفاتورة وأرسله على الرقم <b class="num" id="wa-show" style="direction:ltr;unicode-bidi:isolate"></b>.</p>
+      <button class="mini" id="copy-msg" type="button" style="height:42px">نسخ نص الفاتورة</button>
+      <textarea id="f-copy" readonly hidden aria-label="نص الفاتورة"></textarea>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="adm-login" hidden>
+  <div class="sheet small" role="dialog" aria-modal="true" aria-labelledby="adm-login-t">
+    <div class="sheet-head">
+      <h2 id="adm-login-t">دخول المدير</h2>
+      <button class="x" id="adm-login-x" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <div class="panel">
+      <div class="field"><label for="adm-email">إيميل المدير</label><input id="adm-email" type="text" inputmode="email" autocomplete="email" dir="ltr"></div>
+      <p class="err" id="adm-login-err" role="alert" hidden></p>
+      <button class="primary" id="adm-login-go" type="button" style="width:100%">دخول</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="admin" hidden>
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="adm-t">
+    <div class="sheet-head">
+      <h2 id="adm-t">إدارة المنيو</h2>
+      <button class="x" id="adm-close" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <nav class="tabs" id="adm-tabs" aria-label="أقسام الإدارة">
+      <button class="chip" data-tab="settings" type="button">الإعدادات</button>
+      <button class="chip" data-tab="cats" type="button">الأقسام</button>
+      <button class="chip" data-tab="prods" type="button">الأصناف</button>
+      <button class="chip" data-tab="areas" type="button">مناطق التوصيل</button>
+    </nav>
+    <div id="adm-body"></div>
+    <div class="pubbar">
+      <span id="adm-status" class="note" role="status"></span>
+      <button class="primary" id="adm-publish" type="button">نشر التعديلات</button>
+    </div>
+  </div>
+</div>
+
+<script src="data/menu.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
