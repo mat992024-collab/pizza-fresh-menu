@@ -2346,6 +2346,22 @@
             <input type="number" min="5" id="admin-set-sheetmin" class="admin-form-input">
           </div>
 
+        <div class="admin-form-group" data-feat="firebase">
+            <label class="admin-form-label">🔥 إعدادات Firebase (من Firebase Console ← Project settings ← Your apps):</label>
+            <div id="fb-status" style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 8px;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">API Key:</label><input type="text" id="fb-apiKey" placeholder="AIza..." class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">Auth Domain:</label><input type="text" id="fb-authDomain" placeholder="your-project.firebaseapp.com" class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">Project ID:</label><input type="text" id="fb-projectId" placeholder="your-project" class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">App ID:</label><input type="text" id="fb-appId" placeholder="1:123:web:abc" class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">Storage Bucket:</label><input type="text" id="fb-storageBucket" placeholder="your-project.appspot.com" class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div class="admin-form-group"><label class="admin-form-label">Messaging Sender ID:</label><input type="text" id="fb-messagingSenderId" placeholder="123456789" class="admin-form-input" style="direction: ltr; text-align: left;"></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <button type="button" onclick="testFirebase()" style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">🔌 اختبار الاتصال</button>
+              <button type="button" onclick="saveFbConfig()" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">💾 حفظ وتشغيل Firebase</button>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">لمسح الإعدادات: امسح الحقول واضغط حفظ. تُحفظ على جهاز المدير فقط.</div>
+          </div>
+
         <button onclick="saveStoreSettings()" style="width: 100%; background: linear-gradient(135deg, var(--icon-primary), var(--icon-secondary)); border: 1px solid var(--accent-gold); color: #fff; padding: 12px; border-radius: var(--radius-full); font-weight: 900; font-size: 0.92rem; cursor: pointer; margin-top: 10px;">
             💾 حفظ الإعدادات
           </button>
@@ -2377,14 +2393,7 @@
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">التوكن يُحفظ على جهاز المدير فقط ولا يدخل الملف المنشور. كلمة سر المدير لا تُنشر.</div>
         </div>
 
-        <div style="text-align: right; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
-          <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 6px;">🔥 Firebase (قاعدة البيانات والطلبات)</h4>
-          <div id="fb-status" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
-          <textarea id="admin-fb-config" rows="6" placeholder="الصق إعدادات مشروع Firebase (firebaseConfig من Firebase Console)" style="width: 100%; font-family: monospace; font-size: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px; color: #fff; direction: ltr;"></textarea>
-          <button type="button" onclick="saveFbConfig()" style="width: 100%; margin-top: 8px; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">💾 حفظ إعدادات Firebase وتشغيلها</button>
-        </div>
-
-        <button onclick="downloadUpdatedMenuHtml()" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 14px; border-radius: var(--radius-full); font-weight: 900; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); margin-bottom: 14px;">
+                <button onclick="downloadUpdatedMenuHtml()" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 14px; border-radius: var(--radius-full); font-weight: 900; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); margin-bottom: 14px;">
             📥 تحميل نسخة المنيو المحدثة (index.html)
           </button>
 
@@ -4927,18 +4936,28 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       return '⚠️ الإعدادات محفوظة لكن الاتصال لم يكتمل — حدّث الصفحة';
     }
     function saveFbConfig() {
-      const txt = document.getElementById('admin-fb-config').value.trim();
-      if (!txt) {
+      const cfg = {};
+      ['apiKey','authDomain','projectId','appId','storageBucket','messagingSenderId'].forEach(k => { const v = fieldVal('fb-' + k); if (v) cfg[k] = v; });
+      if (!cfg.apiKey && !cfg.projectId) {
         localStorage.removeItem(FB_CFG_KEY);
-      } else {
-        let cfg = null;
-        try { cfg = JSON.parse(txt); } catch (e) {
-          try { cfg = (new Function('return (' + txt + ');'))(); } catch (e2) { cfg = null; }
-        }
-        if (!cfg || !cfg.apiKey || !cfg.projectId) { alert('الإعدادات غير صحيحة: لازم يكون فيها apiKey و projectId على الأقل'); return; }
-        localStorage.setItem(FB_CFG_KEY, JSON.stringify({ apiKey: cfg.apiKey, authDomain: cfg.authDomain, projectId: cfg.projectId, storageBucket: cfg.storageBucket, messagingSenderId: cfg.messagingSenderId, appId: cfg.appId }));
+        alert('تم مسح إعدادات Firebase');
+        location.reload();
+        return;
       }
+      if (!cfg.apiKey || !cfg.projectId) { alert('لازم apiKey و projectId على الأقل'); return; }
+      localStorage.setItem(FB_CFG_KEY, JSON.stringify(cfg));
       location.reload();
+    }
+    async function testFirebase() {
+      const st = document.getElementById('fb-status');
+      if (!fbDb) { st.textContent = '⚠️ غير متصل: احفظ الإعدادات أولاً وتأكد أن الصفحة حُدّثت'; return; }
+      st.textContent = '⏳ جاري اختبار الاتصال...';
+      try {
+        await fbDb.collection('menu').doc('main').get();
+        st.textContent = '✅ الاتصال بـ Firebase ناجح';
+      } catch (e) {
+        st.textContent = '❌ فشل الاتصال: ' + e.message;
+      }
     }
 
     function ghCfg() {
@@ -4983,9 +5002,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       populateGhFields();
       const st = document.getElementById('fb-status');
       if (st) st.textContent = fbStatusText();
-      const ta = document.getElementById('admin-fb-config');
-      const cfg = getFbConfig();
-      if (ta && cfg && !ta.value) ta.value = JSON.stringify(cfg, null, 2);
+      const cfg = getFbConfig() || {};
+      ['apiKey','authDomain','projectId','appId','storageBucket','messagingSenderId'].forEach(k => {
+        const el = document.getElementById('fb-' + k);
+        if (el && !el.value) el.value = cfg[k] || '';
+      });
     }
 
     function utf8ToB64(str) {
