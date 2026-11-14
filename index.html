@@ -2359,7 +2359,32 @@
             التعديلات التي تجريها في لوحة التحكم تُحفظ تلقائياً في متصفحك. وإذا أردت رفع التعديلات لتظهر لكل الزبائن على الإنترنت، اضغط الزر أدناه لتحميل ملف <code>index.html</code> جاهز ومعدل بالكامل بدون الحاجة لكتابة أي كود!
           </p>
 
-          <button onclick="downloadUpdatedMenuHtml()" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 14px; border-radius: var(--radius-full); font-weight: 900; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); margin-bottom: 14px;">
+  <div data-feat="githubPublish" style="text-align: right; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+          <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 10px;">🚀 النشر على GitHub</h4>
+          <div class="admin-form-group"><label class="admin-form-label">اسم المالك (Owner):</label><input type="text" id="admin-gh-owner" class="admin-form-input" placeholder="mat992024-collab"></div>
+          <div class="admin-form-group"><label class="admin-form-label">اسم المستودع (Repo):</label><input type="text" id="admin-gh-repo" class="admin-form-input" placeholder="pizza-fresh-menu"></div>
+          <div style="display: flex; gap: 8px;">
+            <div class="admin-form-group" style="flex: 1;"><label class="admin-form-label">الفرع:</label><input type="text" id="admin-gh-branch" class="admin-form-input" placeholder="main"></div>
+            <div class="admin-form-group" style="flex: 2;"><label class="admin-form-label">مسار الملف:</label><input type="text" id="admin-gh-path" class="admin-form-input" placeholder="index.html"></div>
+          </div>
+          <div class="admin-form-group"><label class="admin-form-label">التوكن (Fine-grained، صلاحية Contents: Read and write على هذا المستودع فقط):</label><input type="password" id="admin-gh-token" autocomplete="off" class="admin-form-input"></div>
+          <label style="display: flex; gap: 8px; align-items: center; color: #fff; font-size: 0.85rem; margin-bottom: 10px;"><input type="checkbox" id="admin-gh-auto"> <span>نشر تلقائي بعد كل تعديل (بعد 20 ثانية من آخر تعديل)</span></label>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="saveGhCfg()" style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">💾 حفظ الإعدادات</button>
+            <button type="button" onclick="publishToGithub(true)" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">🚀 نشر الآن</button>
+          </div>
+          <div id="gh-status" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; min-height: 1em;"></div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">التوكن يُحفظ على جهاز المدير فقط ولا يدخل الملف المنشور. كلمة سر المدير لا تُنشر.</div>
+        </div>
+
+        <div style="text-align: right; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+          <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 6px;">🔥 Firebase (قاعدة البيانات والطلبات)</h4>
+          <div id="fb-status" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
+          <textarea id="admin-fb-config" rows="6" placeholder="الصق إعدادات مشروع Firebase (firebaseConfig من Firebase Console)" style="width: 100%; font-family: monospace; font-size: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 10px; color: #fff; direction: ltr;"></textarea>
+          <button type="button" onclick="saveFbConfig()" style="width: 100%; margin-top: 8px; background: var(--bg-surface); border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: var(--radius-full); font-weight: 800; cursor: pointer;">💾 حفظ إعدادات Firebase وتشغيلها</button>
+        </div>
+
+        <button onclick="downloadUpdatedMenuHtml()" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 14px; border-radius: var(--radius-full); font-weight: 900; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); margin-bottom: 14px;">
             📥 تحميل نسخة المنيو المحدثة (index.html)
           </button>
 
@@ -2445,14 +2470,17 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     function persistDishes() {
       localStorage.setItem('pizza_fresh_dishes_v1', JSON.stringify(ALL_DISHES));
       pushMenuRemote();
+      scheduleGithubPublish();
     }
     function persistCats() {
       localStorage.setItem('pizza_fresh_cats_v1', JSON.stringify(ALL_CATS));
       pushMenuRemote();
+      scheduleGithubPublish();
     }
     function persistSettings() {
       localStorage.setItem('pizza_fresh_settings_v1', JSON.stringify(STORE_SETTINGS));
       pushMenuRemote();
+      scheduleGithubPublish();
     }
 
     function applyStoreSettings() {
@@ -3953,9 +3981,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
     // ----- Remote menu (Firestore) -----
     function initRemote() {
-      if (!FIREBASE_CONFIG || typeof firebase === 'undefined') return;
+      const fbCfg = getFbConfig();
+      if (!fbCfg || typeof firebase === 'undefined') return;
       try {
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        if (!firebase.apps.length) firebase.initializeApp(fbCfg);
         fbDb = firebase.firestore();
         fbDb.doc(MENU_DOC_PATH).onSnapshot(snap => {
           if (!snap.exists) { pushMenuRemote(); return; }
@@ -4663,7 +4692,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       { key: 'marketing', label: '📣 Meta Pixel / Google Analytics', def: true },
       { key: 'pwa', label: '📱 تثبيت كتطبيق (PWA)', def: true },
       { key: 'adminAuth', label: '🔐 دخول المدير بحساب Firebase', def: false },
-      { key: 'lightTheme', label: '☀️ الوضع الفاتح حسب إعدادات الجهاز', def: false }
+      { key: 'lightTheme', label: '☀️ الوضع الفاتح حسب إعدادات الجهاز', def: false },
+      { key: 'githubPublish', label: '🚀 النشر على GitHub من الإدارة', def: true }
     ];
     function isOn(key) {
       const f = STORE_SETTINGS.features || {};
@@ -4708,6 +4738,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       set('admin-set-close', STORE_SETTINGS.closeTime || '03:00');
       set('admin-set-sheetmin', STORE_SETTINGS.sheetAutoMinutes || 30);
       renderFeatureToggles();
+      populateV5();
     }
 
     // ----- Hours -----
@@ -4878,6 +4909,164 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         return;
       }
       verifyAdminLogin();
+    }
+
+    // =======================================================
+    // V5: GitHub publish (manual + auto) and Firebase config from admin
+    // =======================================================
+    const GH_CFG_KEY = 'pf_gh_cfg';
+    const FB_CFG_KEY = 'pf_fb_cfg';
+    function getFbConfig() {
+      if (FIREBASE_CONFIG) return FIREBASE_CONFIG;
+      try { return JSON.parse(localStorage.getItem(FB_CFG_KEY) || 'null'); } catch (e) { return null; }
+    }
+    function fbStatusText() {
+      const cfg = getFbConfig();
+      if (!cfg) return 'غير مُعد — المنيو يعمل محلياً على هذا الجهاز';
+      if (fbDb) return '✅ متصل بـ Firebase (المشروع: ' + (cfg.projectId || '—') + ')';
+      return '⚠️ الإعدادات محفوظة لكن الاتصال لم يكتمل — حدّث الصفحة';
+    }
+    function saveFbConfig() {
+      const txt = document.getElementById('admin-fb-config').value.trim();
+      if (!txt) {
+        localStorage.removeItem(FB_CFG_KEY);
+      } else {
+        let cfg = null;
+        try { cfg = JSON.parse(txt); } catch (e) {
+          try { cfg = (new Function('return (' + txt + ');'))(); } catch (e2) { cfg = null; }
+        }
+        if (!cfg || !cfg.apiKey || !cfg.projectId) { alert('الإعدادات غير صحيحة: لازم يكون فيها apiKey و projectId على الأقل'); return; }
+        localStorage.setItem(FB_CFG_KEY, JSON.stringify({ apiKey: cfg.apiKey, authDomain: cfg.authDomain, projectId: cfg.projectId, storageBucket: cfg.storageBucket, messagingSenderId: cfg.messagingSenderId, appId: cfg.appId }));
+      }
+      location.reload();
+    }
+
+    function ghCfg() {
+      try { return JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}'); } catch (e) { return {}; }
+    }
+    function fieldVal(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    function setGhStatus(t) { const el = document.getElementById('gh-status'); if (el) el.textContent = t; }
+    function saveGhCfg() {
+      const old = ghCfg();
+      const c = {
+        owner: fieldVal('admin-gh-owner'),
+        repo: fieldVal('admin-gh-repo'),
+        branch: fieldVal('admin-gh-branch') || 'main',
+        path: fieldVal('admin-gh-path') || 'index.html',
+        token: fieldVal('admin-gh-token') || old.token || '',
+        auto: !!document.getElementById('admin-gh-auto').checked
+      };
+      localStorage.setItem(GH_CFG_KEY, JSON.stringify(c));
+      document.getElementById('admin-gh-token').value = '';
+      populateGhFields();
+      setGhStatus('✅ تم حفظ إعدادات GitHub على هذا الجهاز');
+      if (c.auto) scheduleGithubPublish();
+    }
+    function populateGhFields() {
+      const c = ghCfg();
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+      set('admin-gh-owner', c.owner);
+      set('admin-gh-repo', c.repo);
+      set('admin-gh-branch', c.branch || 'main');
+      set('admin-gh-path', c.path || 'index.html');
+      const tok = document.getElementById('admin-gh-token');
+      if (tok) tok.placeholder = c.token ? 'التوكن محفوظ على هذا الجهاز ✔ (اتركه فارغاً للإبقاء عليه)' : 'Fine-grained token (Contents: Read and write)';
+      const auto = document.getElementById('admin-gh-auto');
+      if (auto) auto.checked = !!c.auto;
+      const st = document.getElementById('gh-status');
+      if (st && !st.textContent) {
+        const last = localStorage.getItem('pf_gh_last');
+        st.textContent = c.owner && c.repo ? ('المستودع: ' + c.owner + '/' + c.repo + (last ? ' — آخر نشر: ' + last : '')) : 'لم يتم الإعداد بعد';
+      }
+    }
+    function populateV5() {
+      populateGhFields();
+      const st = document.getElementById('fb-status');
+      if (st) st.textContent = fbStatusText();
+      const ta = document.getElementById('admin-fb-config');
+      const cfg = getFbConfig();
+      if (ta && cfg && !ta.value) ta.value = JSON.stringify(cfg, null, 2);
+    }
+
+    function utf8ToB64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      const CH = 0x8000;
+      for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+      return btoa(bin);
+    }
+
+    // Builds a standalone index.html with the current menu, settings and features baked in.
+    function buildMenuHtml() {
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('#pf-manifest, link[rel="apple-touch-icon"], meta[name="apple-mobile-web-app-capable"], #pf-track-backdrop, #pf-reviews-backdrop, #pf-confirm-backdrop').forEach(n => n.remove());
+      clone.querySelectorAll('script[src*="googletagmanager"], script[src*="fbevents"]').forEach(n => n.remove());
+      clone.querySelectorAll('head script:not([src])').forEach(n => {
+        if (/fbevents|dataLayer=window\.dataLayer|fbq\('init'/.test(n.textContent)) n.remove();
+      });
+      clone.querySelectorAll('.open').forEach(n => n.classList.remove('open'));
+      let html = '<!DOCTYPE html>\n' + clone.outerHTML;
+
+      const settings = plain(STORE_SETTINGS);
+      delete settings.adminPin; // كلمة السر لا تُنشر
+      html = html.replace(/const DEFAULT_DISHES = [\s\S]*?;\n/, () => 'const DEFAULT_DISHES = ' + JSON.stringify(ALL_DISHES) + ';\n');
+      html = html.replace(/const DEFAULT_CATS = [\s\S]*?;\n/, () => 'const DEFAULT_CATS = ' + JSON.stringify(ALL_CATS) + ';\n');
+      html = html.replace(/let STORE_SETTINGS = \{[\s\S]*?\};/, () => 'let STORE_SETTINGS = ' + JSON.stringify(settings) + ';');
+      return html;
+    }
+
+    async function ghErrText(r) {
+      let m = '';
+      try { m = (await r.json()).message || ''; } catch (e) {}
+      return 'HTTP ' + r.status + (m ? ' - ' + m : '');
+    }
+    async function publishToGithub(manual) {
+      const c = ghCfg();
+      if (!c.owner || !c.repo || !c.token) {
+        if (manual) alert('املأ اسم المالك والمستودع والتوكن واحفظ أولاً');
+        return false;
+      }
+      if (window.__ghBusy) return false;
+      window.__ghBusy = true;
+      const branch = c.branch || 'main';
+      const api = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo)
+        + '/contents/' + String(c.path || 'index.html').split('/').map(encodeURIComponent).join('/');
+      const headers = { Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+      try {
+        setGhStatus('⏳ جاري النشر على GitHub...');
+        const content = utf8ToB64(buildMenuHtml());
+        for (let attempt = 0; attempt < 2; attempt++) {
+          let sha = null;
+          const g = await fetch(api + '?ref=' + encodeURIComponent(branch), { headers, cache: 'no-store' });
+          if (g.ok) sha = (await g.json()).sha;
+          else if (g.status !== 404) throw new Error(await ghErrText(g));
+          const body = { message: 'تحديث المنيو من لوحة الإدارة - ' + new Date().toLocaleString('ar-EG'), content, branch };
+          if (sha) body.sha = sha;
+          const p = await fetch(api, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, headers), body: JSON.stringify(body) });
+          if (p.ok) {
+            const t = new Date().toLocaleTimeString('ar-EG');
+            localStorage.setItem('pf_gh_last', t);
+            setGhStatus('✅ تم النشر على GitHub الساعة ' + t + ' — يظهر للعملاء خلال دقيقة تقريباً');
+            return true;
+          }
+          if (p.status === 409 || p.status === 422) continue; // الملف تغيّر: نعيد قراءة sha ونحاول مرة أخرى
+          throw new Error(await ghErrText(p));
+        }
+        throw new Error('تعارض في الملف، حاول مرة أخرى');
+      } catch (e) {
+        setGhStatus('❌ فشل النشر: ' + e.message);
+        if (manual) alert('فشل النشر على GitHub: ' + e.message);
+        return false;
+      } finally {
+        window.__ghBusy = false;
+      }
+    }
+    let ghAutoTimer = null;
+    function scheduleGithubPublish() {
+      const c = ghCfg();
+      if (!c.auto || !c.token || !isOn('githubPublish')) return;
+      clearTimeout(ghAutoTimer);
+      ghAutoTimer = setTimeout(() => publishToGithub(false), 20000);
     }
 
     // Init App on Load
